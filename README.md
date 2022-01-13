@@ -1,9 +1,9 @@
 # react-native-couchbase-lite
 
 This repository contains a React Native Module that provides an interface to CouchbaseLite. Currently, only iOS is supported.
-
-
-# Table of Contents
+  
+  
+## Table of Contents
 
   - [What is react-native-couchbase-lite?](#introduction)
   - [How to install](#how-to-install-the-module)
@@ -13,8 +13,8 @@ This repository contains a React Native Module that provides an interface to Cou
     - [Query Basics](#query-basics)
     - [Replication](#replication)
   - [Advanced Usage](#advanced-usage)
-
-
+  
+  
 ## Introduction
 react-native-couchbase-lite (RNCouchbaseLite) is a React Native module for using CouchbaseLite in React Native. It currenty only supports iOS, and provides the following features:
 
@@ -24,8 +24,8 @@ react-native-couchbase-lite (RNCouchbaseLite) is a React Native module for using
   - Replication with Couchbase Sync Gateway (SGW).
 
 This module uses the CouchbaswLiteSwift-xcframework version 2.8.4 [Docs](https://docs.couchbase.com/mobile/2.8.4/couchbase-lite-swift/).
-
-
+  
+  
 ## How to install the module
 
 - From your project’s directory, install the module:
@@ -34,26 +34,31 @@ npm install https://github.com/oneok-mobile/react-native-couchbase-lite
 ```
 
 (The `Enterprise Edition` installation has some [additional steps](#enterprise-edition)) at this point.)
+  
 
 - Run the CocoaPods installation:
 ```sh
 cd ios
 pod install
 ```
-
+  
+  
 - Open `your project's` workspace (`[app]/ios/[app].xcworkspace`) with Xcode.
 - Select your Project in the Project Navigator, then select your build target.
 - Find the “Frameworks, Libraries, and Embedded Content” section fo the General tab and click the small, “+” icon at the bottom.
 - On the “Choose frameworks and libraries to add:” modal, select, “Add Other…” from the “Add Other…” dropdown near the bottom.
 
 ![Add Framework](pics/add_framework.png)
-
+  
+  
 - Navigate to [your project]/node_modules/react-native-couchbase-lite/iOS/Frameworks/CouchbaseLiteSwift.xcframework and click, “Open”.
 
 ![Add Framework 2](pics/add_framework2.png)
+  
 
 - Clean & Build.
-
+  
+  
 ### Enterprise Edition
 
 Installing RNCouchbaseLite with the Enterprise Edition of CouchbaseLite requires a few additional steps. Additionally, because these changes reside in the node_modules folder, these changes will not be tracked and you may be required to repeat them. It might be advantageous to include these changes in a script.
@@ -70,16 +75,17 @@ Installing RNCouchbaseLite with the Enterprise Edition of CouchbaseLite requires
 ```sh
 		"SWIFT_ACTIVE_COMPILATION_CONDITIONS" => "CBLENTERPRISE",
 ```
-
+  
 - Continue the [installation instructions](#how-to-install-the-module) in the previous section.
-
-
+  
+  
 ## Usage
 
 Import the module into your project:
 ```javascript
 import RNCouchbaseLite from 'react-native-couchbase-lite';
 ```
+  
 
 ### Basics
 
@@ -100,11 +106,13 @@ const document = {
 // Save:
 const documentId = await RNCouchbaseLite.saveDocument({ databaseName, document });
 ```
+  
 
 - You can also specify a document-id, if you don't want an auto-generated one:
 ```javascript
 await RNCouchbaseLite.saveDocument({ databaseName, document: { id: 'GarbageRecordAlpha1', ...document } });
 ```
+  
 
 It is recommended that you use your own identity fields for records when laying out your database design. The CouchbaseLite document `id` has some special behaviors.
 
@@ -112,6 +120,7 @@ It is recommended that you use your own identity fields for records when laying 
 ```javascript
 const documentFromDB = await RNCouchbaseLite.getDocument({ databaseName, documentId }); // Document is anonymous
 ```
+  
 
 Deleted documents cannot be retrieved this way. Use `getDocuments` with the isDeleted META: tag to get deleted documents.
 
@@ -122,27 +131,29 @@ documentFromDB.bar *= 1.00014; // (make change(s))
 documentFromDB.baz.bark[0] = 'bandanas';
 await RNCouchbaseLite.saveDocument({ databaseName, document: documentFromDB }); // This will fire change events, even if the saved and old documents are the same.
 ```
+  
 
 - Delete Document.
 ```javascript
 await RNCouchbaseLite.deleteDocument({ databaseName, documentId });
 ```
-
-
+  
+  
 ### Query Basics
 
 - Get All Documents.
 ```javascript
 const documents = await RNCouchbaseLite.getDocuments(); // 'cbdb' is the default database
 ```
+  
 
 Specify database with the 'from' property. Non-existent databases are automatically created.
 ```javascript
 const documents = await RNCouchbaseLite.getDocuments({ from: databaseName });
 ```
 By default, all document properties are returned, but not 'id' (document-id)
-
-
+  
+  
 - Use the 'select' property to specify a list of properties to include in the returned documents.
 ```javascript
 const documents = await RNCouchbaseLite.getDocuments({
@@ -151,8 +162,8 @@ const documents = await RNCouchbaseLite.getDocuments({
 });
 ```
 The 'id' property (document-id) can also be specified. Properties that do not exist on a document will be ignored.
-
-
+  
+  
 - Use the 'limit' property to return the first n results from the possible resultset.
 ```javascript
 const documents = await RNCouchbaseLite.getDocuments({
@@ -160,8 +171,8 @@ const documents = await RNCouchbaseLite.getDocuments({
 	limit	: 2
 });
 ```
-
-
+  
+  
 - Use the 'offset' property to skip the first n results from the possible resultset
 Use the 'offset' property together with the 'limit' property together for pagination
 ```javascript
@@ -171,8 +182,8 @@ const documents = await RNCouchbaseLite.getDocuments({
 	offset	: 6
 });
 ```
-
-
+  
+  
 - Filter results with the `where` property. By default, each key:value pair is a left:right equal-to comparator where 'left' (the key) is a property-name expression and 'right' (the value) is a static value expression (number, string, boolean, etc.).
 ```javascript
 const documents = await RNCouchbaseLite.getDocuments({
@@ -181,8 +192,8 @@ const documents = await RNCouchbaseLite.getDocuments({
 	where	: [{ numProp: 2 }]
 });
 ```
-
-
+  
+  
 `where` is a list of objects. Each object is connected by a logical 'OR', while each key:value pair is connected by a logical 'AND'.
 This query retrieves the 'id', 'type' & 'numProp' properties for every document that has a (type of 'example' AND a numProp of 3) OR has a (type of 'garbage'):
 ```javascript
@@ -192,8 +203,8 @@ const documents = await RNCouchbaseLite.getDocuments({
 	where	: [{ type: 'example', numProp: 3 }, { type: 'garbage' }]
 });
 ```
-
-
+  
+  
 - child and grandchild properties are addressed using dot-notation.
 ```javascript
 const documents = await RNCouchbaseLite.getDocuments({
@@ -202,8 +213,8 @@ const documents = await RNCouchbaseLite.getDocuments({
 	where	: [{ type: 'example', 'objectProp.objectProp.bar': 42 }]
 });
 ```
-
-
+  
+  
 - Expressions can include special commands to modify them.
 Here, we are using the PROP: command to create a property-expression for 'objectProp.boolProp' instead of the default, static value-expression:
 ```javascript
@@ -213,8 +224,8 @@ const documents = await RNCouchbaseLite.getDocuments({
 	where	: [{ type: 'example', boolProp: 'PROP:objectProp.boolProp' }]
 });
 ```
-
-
+  
+  
 - The left expression (keys) can use commands, too.
 Here, we are using the UPPER: command to uppercase the 'stringProp' property and compare it to the string, 'PIZZA':
 ```javascript
@@ -224,8 +235,8 @@ const documents = await RNCouchbaseLite.getDocuments({
 	where	: [{ type: 'example', 'UPPER:stringProp': 'PIZZA' }]
 });
 ```
-
-
+  
+  
 - Expression commands can be chained and are available in select-expressions. Additional parameters for commands are delimited by forward-slashes. Math commands are partially available - right-side expressions aren't supported, only numbers.
 ```javascript
 const documents = await RNCouchbaseLite.getDocuments({
@@ -234,8 +245,8 @@ const documents = await RNCouchbaseLite.getDocuments({
 	where	: [{ type: 'example' }]
 });
 ```
-
-
+  
+  
 - Aliases are assigned with the '=' delimiter.
 ```javascript
 const documents = await RNCouchbaseLite.getDocuments({
@@ -244,10 +255,10 @@ const documents = await RNCouchbaseLite.getDocuments({
 	where	: [{ type: 'example' }]
 });
 ```
-
+  
 More [advanced features](#advanced-usage) are available. (Comperators, Joins, Grouping, and Ordering)
-
-
+  
+  
 ### Replication
 
 - Start a replicator:
@@ -284,9 +295,11 @@ const replicatorName = await RNCouchbaseLite.startReplicator({
 ```javascript
 await RNCouchbaseLite.stopReplicator({ replicatorName });
 ```
-
-
+  
+  
 ## Advanced Usage
 
 More detail and more advanced features are documented further in the [documentation.js file](documentation.js).
+  
 
+  
